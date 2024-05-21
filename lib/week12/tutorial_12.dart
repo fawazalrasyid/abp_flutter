@@ -14,7 +14,9 @@ class TutorialWeek12 extends StatefulWidget {
 }
 
 Future<List<Product>> fetchProduct() async {
-  final res = await http.get(Uri.parse('http://localhost:8000/api/product'));
+  final res = await http.get(
+    Uri.parse('http://192.168.0.103:8000/api/product'),
+  );
   if (res.statusCode == 200) {
     var data = jsonDecode(res.body);
     var parsed = data['list'].cast<Map<String, dynamic>>();
