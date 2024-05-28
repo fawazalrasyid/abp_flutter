@@ -165,13 +165,15 @@ class _TutorialWeek12State extends State<TutorialWeek12> {
                     products = fetchProduct();
                   });
 
-                  Navigator.pop(context);
+                  if (context.mounted) {
+                    Navigator.pop(context);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(response),
-                    ),
-                  );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(response),
+                      ),
+                    );
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
