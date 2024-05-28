@@ -137,6 +137,33 @@ class _TaskPageState extends State<TaskPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
+                const SizedBox(height: 16),
+                const Text(
+                  'Week 13',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TutorialWeek12(),
+                      ),
+                    ),
+                    child: const Text(
+                      'Networking 2',
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
               ],
             ),
           ),

@@ -15,19 +15,39 @@ class TutorialWeek12 extends StatefulWidget {
 
 Future<List<Product>> fetchProduct() async {
   final res = await http.get(
-    Uri.parse('http://192.168.0.103:8000/api/product'),
+    Uri.parse('http://127.0.0.1:8000/api/products'),
   );
   if (res.statusCode == 200) {
-    var data = jsonDecode(res.body);
-    var parsed = data['list'].cast<Map<String, dynamic>>();
-    return parsed.map<Product>((json) => Product.fromJson(json)).toList();
+    var data = jsonDecode(res.body) as List;
+    return data.map((json) => Product.fromJson(json)).toList();
   } else {
     throw Exception('Failed');
   }
 }
 
+Future addProduct(Product product) async {
+  final res = await http.post(
+    Uri.parse('http://127.0.0.1:8000/api/products'),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(product.toJson()),
+  );
+
+  if (res.statusCode == 201) {
+    var data = jsonDecode(res.body);
+    return data['message'];
+  } else {
+    var data = jsonDecode(res.body);
+    return data['message'];
+  }
+}
+
 class _TutorialWeek12State extends State<TutorialWeek12> {
   late Future<List<Product>> products;
+
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
 
   @override
   void initState() {
@@ -90,6 +110,81 @@ class _TutorialWeek12State extends State<TutorialWeek12> {
           },
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showAddProductDialog(context),
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  void showAddProductDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add Product'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              TextField(
+                controller: priceController,
+                decoration: const InputDecoration(labelText: 'Price'),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (nameController.text.isNotEmpty &&
+                    priceController.text.isNotEmpty) {
+                  final newProduct = Product(
+                    id: 0,
+                    name: nameController.text,
+                    price: int.parse(priceController.text),
+                    description: 'Lorem ipsum',
+                    processor: 'Intel Core i5',
+                    memory: '8GB',
+                    storage: '1TB',
+                  );
+
+                  final response = await addProduct(newProduct);
+
+                  nameController.clear();
+                  priceController.clear();
+
+                  setState(() {
+                    products = fetchProduct();
+                  });
+
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(response),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Name and price cannot be empty'),
+                    ),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 
